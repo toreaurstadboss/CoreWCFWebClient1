@@ -1,0 +1,61 @@
+﻿@using System.ServiceModel;
+@using System.ServiceModel.Channels;
+@using ServiceReference1;
+@{
+    ViewData["Title"] = "Home Page";
+}
+
+<div class="text-center">
+    <h1 class="display-4">Welcome</h1>
+    <p>Learn about <a href="https://docs.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+</div>
+
+@{
+
+    string Base64Encode(string plainText)
+    {
+        var plainTextBytes = System.Text.Encoding.UTF8.GetBytes(plainText);
+        return System.Convert.ToBase64String(plainTextBytes);
+    }
+
+    var binding = new BasicHttpsBinding();
+    binding.Security.Mode = BasicHttpsSecurityMode.Transport;
+    binding.Security.Transport.ClientCredentialType = HttpClientCredentialType.Basic;
+
+
+    //// Enable support for unencrypted HTTP2
+    //AppContext.SetSwitch("System.Net.Http.SocketsHttpHandler.Http2UnencryptedSupport", true);
+
+    string username = "someuser"; 
+    string password = "somepassw0rd"; 
+
+    string basicHeaderValue = "Basic " + Base64Encode($"{username}:{password}");
+
+    var eab = new EndpointAddressBuilder(new EndpointAddress("https://localhost:7218/Service.svc"));
+
+    eab.Headers.Add(AddressHeader.CreateAddressHeader("Authorization",  // Header Name
+        string.Empty,           // Namespace
+        basicHeaderValue));  // Header Value
+
+    //eab.Headers.Add(AddressHeader.CreateAddressHeader("Connection",  // Header Name
+    //    string.Empty,           // Namespace
+    //    "Keep-Alive"));  // Header Value
+
+    var endpointAddress = eab.ToEndpointAddress();
+
+    var client = new ServiceClient(binding, endpointAddress);
+
+
+  
+
+    //client = new ServiceClient();
+
+    client.ClientCredentials.UserName.UserName = username;
+    client.ClientCredentials.UserName.Password = password;
+
+    var result =  client.GetDataAsync(42).Result;
+
+    Console.WriteLine(result);
+
+
+}
