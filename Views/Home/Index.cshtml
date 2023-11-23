@@ -1,6 +1,8 @@
 ﻿@using System.ServiceModel;
 @using System.ServiceModel.Channels;
 @using ServiceReference1;
+@using System.ServiceModel.Security;
+@using System.Security.Cryptography.X509Certificates;
 @{
     ViewData["Title"] = "Home Page";
 }
@@ -53,7 +55,17 @@
     client.ClientCredentials.UserName.UserName = username;
     client.ClientCredentials.UserName.Password = password;
 
-    var result =  client.GetDataAsync(42).Result;
+    //client.ClientCredentials.ServiceCertificate.SslCertificateAuthentication =
+    //    new X509ServiceCertificateAuthentication()
+    //        {
+    //            CertificateValidationMode = X509CertificateValidationMode.None,
+    //            RevocationMode = X509RevocationMode.NoCheck
+    //        };
+
+    var result =  await client.GetDataAsync(42);
+
+    <h1>@result</h1>
+
 
     Console.WriteLine(result);
 
