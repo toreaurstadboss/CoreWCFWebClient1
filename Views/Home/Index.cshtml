@@ -1,5 +1,6 @@
 ﻿@using System.ServiceModel;
 @using System.ServiceModel.Channels;
+@using CoreWCFWebClient1.Extensions;
 @using ServiceReference1;
 @using System.ServiceModel.Security;
 @using System.Security.Cryptography.X509Certificates;
@@ -14,60 +15,13 @@
 
 @{
 
-    string Base64Encode(string plainText)
-    {
-        var plainTextBytes = System.Text.Encoding.UTF8.GetBytes(plainText);
-        return System.Convert.ToBase64String(plainTextBytes);
-    }
+    string username = "someuser";
+    string password = "somepassw0rd";
 
-    var binding = new BasicHttpsBinding();
-    binding.Security.Mode = BasicHttpsSecurityMode.Transport;
-    binding.Security.Transport.ClientCredentialType = HttpClientCredentialType.Basic;
+    var client = new ServiceClient().WithBasicAuth<IService, ServiceClient>(username, password);
 
+    var result = await client.GetDataAsync(42);
 
-    //// Enable support for unencrypted HTTP2
-    //AppContext.SetSwitch("System.Net.Http.SocketsHttpHandler.Http2UnencryptedSupport", true);
-
-    string username = "someuser"; 
-    string password = "somepassw0rd"; 
-
-    string basicHeaderValue = "Basic " + Base64Encode($"{username}:{password}");
-
-    var eab = new EndpointAddressBuilder(new EndpointAddress("https://localhost:7218/Service.svc"));
-
-    eab.Headers.Add(AddressHeader.CreateAddressHeader("Authorization",  // Header Name
-        string.Empty,           // Namespace
-        basicHeaderValue));  // Header Value
-
-    //eab.Headers.Add(AddressHeader.CreateAddressHeader("Connection",  // Header Name
-    //    string.Empty,           // Namespace
-    //    "Keep-Alive"));  // Header Value
-
-    var endpointAddress = eab.ToEndpointAddress();
-
-    var client = new ServiceClient(binding, endpointAddress);
-
-
-  
-
-    //client = new ServiceClient();
-
-    client.ClientCredentials.UserName.UserName = username;
-    client.ClientCredentials.UserName.Password = password;
-
-    //client.ClientCredentials.ServiceCertificate.SslCertificateAuthentication =
-    //    new X509ServiceCertificateAuthentication()
-    //        {
-    //            CertificateValidationMode = X509CertificateValidationMode.None,
-    //            RevocationMode = X509RevocationMode.NoCheck
-    //        };
-
-    var result =  await client.GetDataAsync(42);
-
-    <h1>@result</h1>
-
-
-    Console.WriteLine(result);
-
+    <h5>@Html.Raw(result)</h5>
 
 }
