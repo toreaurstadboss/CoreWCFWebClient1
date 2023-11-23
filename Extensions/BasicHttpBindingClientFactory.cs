@@ -1,5 +1,4 @@
-﻿using System.Runtime.CompilerServices;
-using System.ServiceModel;
+﻿using System.ServiceModel;
 using System.ServiceModel.Channels;
 
 namespace CoreWCFWebClient1.Extensions
@@ -31,7 +30,7 @@ namespace CoreWCFWebClient1.Extensions
                 basicHeaderValue));  // Header Value
             var endpointAddress = eab.ToEndpointAddress();
 
-            var clientWithConfiguredBasicAuth = (TServiceImplementation) Activator.CreateInstance(typeof(TServiceImplementation), binding, endpointAddress)!;
+            var clientWithConfiguredBasicAuth = (TServiceImplementation)Activator.CreateInstance(typeof(TServiceImplementation), binding, endpointAddress)!;
             clientWithConfiguredBasicAuth.ClientCredentials.UserName.UserName = username;
             clientWithConfiguredBasicAuth.ClientCredentials.UserName.Password = username;
 
@@ -41,10 +40,8 @@ namespace CoreWCFWebClient1.Extensions
         private static string Base64Encode(string plainText)
         {
             var plainTextBytes = System.Text.Encoding.UTF8.GetBytes(plainText);
-            return System.Convert.ToBase64String(plainTextBytes);
+            return Convert.ToBase64String(plainTextBytes);
         }
-
-
 
     }
 }
